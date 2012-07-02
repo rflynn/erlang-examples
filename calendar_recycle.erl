@@ -6,9 +6,9 @@
 % NOTE: shortcoming: lunar cycle
 
 main(_) ->
-    AllYears = lists:sort([
+    AllYears = [
         {{calendar:day_of_the_week(Year,1,1), calendar:is_leap_year(Year)},Year}
-            || Year <- lists:seq(1900,2100)]),
+            || Year <- lists:seq(1900,2100)],
     MergedByKey =
         lists:foldl(
             fun({K,V},O) -> orddict:append(K,V,O) end,
