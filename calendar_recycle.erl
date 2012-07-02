@@ -1,23 +1,17 @@
 #!/usr/bin/env escript
 %% -*- erlang -*-
 
-% figure out which year's calendars are identical in structure
-% so we can recycle them
+% figure out which year's calendars are identical in structure so we can recycle them
 % inspiration: http://garyc.me/calendars/
-
-year_key(Year) ->
-    FirstWeekday = calendar:day_of_the_week({Year,1,1}),
-    IsLeapYear = calendar:is_leap_year(Year),
-    {FirstWeekday, IsLeapYear}.
-
-% fold [{K,V}] append Vs on matching K
-append_val({K,V}, [{K,V2}|Rest]) -> [{K,[V|V2]}|Rest];
-append_val({K,V}, Merged) -> [{K,[V]}|Merged].
+% NOTE: shortcoming: lunar cycle
 
 main(_) ->
-    AllYears = lists:sort([{year_key(Year),Year} || Year <- lists:seq(1900,2100)]),
+    AllYears = lists:sort([
+        {{calendar:day_of_the_week(Year,1,1), calendar:is_leap_year(Year)},Year}
+            || Year <- lists:seq(1900,2100)]),
     MergedByKey =
-        lists:foldl(fun(X,Y) -> append_val(X,Y) end,
-            [hd(AllYears)], tl(AllYears)),
+        lists:foldl(
+            fun({K,V},O) -> orddict:append(K,V,O) end,
+            orddict:new(), AllYears),
     io:format("~p~n", [MergedByKey]).
 
