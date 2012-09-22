@@ -1,3 +1,4 @@
+% perform Dijkstra's algorithm over a directed graph
 
 -module(dijkstra).
 -author("Ryan Flynn parseerror@gmail.com www.parseerror.com github.com/rflynn").
@@ -42,7 +43,7 @@ closest_min(_,_,Acc)                -> Acc.
 
 fetch_or(Key, Dict, Default) ->
     try dict:fetch(Key, Dict)
-    catch _:_ -> Default
+    catch _:_RCF -> Default
     end.
 
 addinf(inf, _) -> inf;
@@ -120,7 +121,7 @@ tests() ->
              {sss,61}]
         },
 
-    RealWorldWebTest =
+    RyanFlynnWebTest =
         {
             [web, RealWorld],
             [{web,0},
@@ -138,12 +139,11 @@ tests() ->
             Diamond2Test,
             RealWorldWin1Test,
             RealWorldWin2Test,
-            RealWorldWebTest
+            RyanFlynnWebTest
         ],
 
     {tests_results,
-        [
-            {[N,G],
+        [ {[N,G],
              dijkstra(N,
                 dict:from_list([{K,dict:from_list(V)} || {K,V} <- G])),
              Exp}
