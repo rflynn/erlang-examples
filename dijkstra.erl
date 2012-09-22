@@ -60,7 +60,27 @@ test() ->
 
 tests() ->
 
-    % Given multiple paths
+    Node =
+        [
+            {a, []}
+        ],
+    NodeTest =
+        {
+            [a, Node],
+            [{a,0}]
+        },
+
+    Loop =
+        [
+            {a, [{a,1}]}
+        ],
+    LoopTest =
+        {
+            [a, Loop],
+            [{a,0}]
+        },
+
+    % Given multiple paths from 'a' to 'd' choose the cheapest one
     Diamond =
         [
             {a, [{b,2},{c,1}]},
@@ -135,6 +155,8 @@ tests() ->
 
     Tests =
         [
+            NodeTest,
+            LoopTest,
             DiamondTest,
             Diamond2Test,
             RealWorldWin1Test,
