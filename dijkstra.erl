@@ -1,5 +1,6 @@
 
 -module(dijkstra).
+-author("Ryan Flynn parseerror@gmail.com www.parseerror.com github.com/rflynn").
 -export(
     [
         dijkstra/2,
@@ -61,37 +62,91 @@ test() ->
     Failed = lists:filter(fun({_In,Out,Exp}) -> Out =/= Exp end, Res),
     case Failed of
         [] -> ok;
-        _ -> Failed
+        _ -> {error, Failed}
     end.
 
 tests() ->
+
+    % Given multiple paths
+    Diamond =
+        [
+            {a, [{b,2},{c,1}]},
+            {b, [{d,1}]},
+            {c, [{d,1}]},
+            {d, []}
+        ],
+    DiamondTest =
+        {
+            [a, Diamond],
+            [{a,0},{c,1},{d,2},{b,2}]
+        },
+
+    % Ensure that the order of a's paths does not affect its outcome
+    Diamond2 =
+        [
+            {a, [{c,1},{b,2}]},
+            {b, [{d,1}]},
+            {c, [{d,1}]},
+            {d, []}
+        ],
+    Diamond2Test =
+        {
+            [a, Diamond2],
+            [{a,0},{c,1},{d,2},{b,2}]
+        },
+
+    RealWorld =
+        [
+            {win1,      [{cloud,50},{win2,10},{usbdrive,20},{dropbox,20}]},
+            {win2,      [{win1,10},{usbdrive,9}]},
+            {cloud,     [{sss,1},{dropbox,10}]},
+            {web,       [{cloud,50}]},
+            {sss,       []},
+            {dropbox,   []},
+            {usbdrive,  []}
+        ],
+
+    RealWorldWin1Test =
+        {
+            [win1, RealWorld],
+            [{win1,0},
+             {win2,10},
+             {usbdrive,19},
+             {dropbox,20},
+             {cloud,50},
+             {sss,51}]
+        },
+
+    RealWorldWin2Test =
+        {
+            [win2, RealWorld],
+            [{win2,0},
+             {usbdrive,9},
+             {win1,10},
+             {dropbox,30},
+             {cloud,60},
+             {sss,61}]
+        },
+
+    RealWorldWebTest =
+        {
+            [web, RealWorld],
+            [{web,0},
+             {cloud,50},
+             {sss,51},
+             {dropbox,60},
+             {usbdrive,inf},
+             {win2,inf},
+             {win1,inf}]
+        },
+
     Tests =
         [
-            {
-                [win1,
-                    [
-                        {win1,      [{cloud,500},{win2,10},{usbdrive,20}]},
-                        {win2,      [{win1,10}]},
-                        {cloud,     [{hss,1},{dropbox,10}]},
-                        {web,       [{cloud,500}]},
-                        {hss,       []},
-                        {dropbox,   []},
-                        {usbdrive,  []}
-                    ]
-                ],
-                []
-            },
-            {
-                [a,
-                    [
-                        {a, [{b,2},{c,1}]},
-                        {b, [{d,1}]},
-                        {c, [{d,1}]},
-                        {d, []}
-                    ]
-                ],
-                [{a,0},{c,1},{d,2},{b,2}]
-            }
+            DiamondTest,
+            Diamond2Test,
+            RealWorldWin1Test,
+            RealWorldWin2Test,
+            RealWorldWebTest
         ],
 
     {tests_results,
