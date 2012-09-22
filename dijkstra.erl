@@ -14,33 +14,26 @@ dijkstra(Node, G) ->
         sets:from_list(dict:fetch_keys(G)),
         dict:fetch_keys(G)).
 
-dijkstra(_Node, _G, Dist, _UnvisitedSet, []) ->
-    lists:sort(
-        fun({_,X},{_,Y}) -> X < Y end,
-        dict:to_list(Dist));
-dijkstra(Node, G, Dist, UnvisitedSet, Unvisit=[U|_]) ->
-    Closest = closest(dict:fetch(Node, G), UnvisitedSet, U),
+dijkstra(_, _, Dist, _, []) ->
+    lists:sort(fun({_,X},{_,Y}) -> X < Y end, dict:to_list(Dist));
+dijkstra(Node, G, Dist, UnvisitSet, Unvisit=[U|_]) ->
+    {Closest,_} =
+        dict:fold(fun(K,V,Acc) -> closest_min(K,V,Acc) end, {U,inf},
+            dict:filter(fun(K,_) -> sets:is_element(K, UnvisitSet) end,
+                dict:fetch(Node, G))),
     dijkstra(Closest, G,
         distances(Node, G,
             dict:fetch_keys(fetch_or(Node, G, dict:new())), Dist),
-        sets:del_element(Closest, UnvisitedSet),
+        sets:del_element(Closest, UnvisitSet),
         lists:delete(Closest, Unvisit)).
 
-distances(_Node, _G, [], Dist) -> Dist;
+distances(_, _, [], Dist) -> Dist;
 distances(Node, G, [N|Neighbors], Dist) ->
     distances(Node, G, Neighbors,
         dict:store(N,
             min(fetch_or(N, Dist, inf),
                 addinf(fetch_or(Node, Dist, inf),
-                    dict:fetch(N, dict:fetch(Node, G)))),
-            Dist)).
-
-closest(SubG, UnvisSet, Else) ->
-    SubGUnvis = dict:filter(fun(K,_) -> sets:is_element(K, UnvisSet) end, SubG),
-    {Closest,_Dist} =
-        dict:fold(fun(K,V,Acc) -> closest_min(K,V,Acc) end,
-            {Else,inf}, SubGUnvis),
-    Closest.
+                    dict:fetch(N, dict:fetch(Node, G)))), Dist)).
 
 % dict:filter callback: choose {K,V} where min(V); respect 'inf'inity
 closest_min(_,inf,Acc)              -> Acc;
