@@ -24,7 +24,7 @@ dijkstra(Node, G, Dist, Unvisit=[U|_]) ->
                 dict:fetch(Node, G))),
     dijkstra(Closest, G,
         distances(Node, G,
-            dict:fetch_keys(fetch_or(Node, G, dict:new())), Dist),
+            dict:fetch_keys(dict:fetch(Node, G)), Dist),
         lists:delete(Closest, Unvisit)).
 
 distances(_, _, [], Dist) -> Dist;
@@ -41,9 +41,9 @@ closest_min(K,V,{_,inf})            -> {K,V};
 closest_min(K,V,{_,VA}) when V < VA -> {K,V};
 closest_min(_,_,Acc)                -> Acc.
 
-fetch_or(Key, Dict, Default) ->
+fetch_or(Key, Dict, Rcf) ->
     try dict:fetch(Key, Dict)
-    catch _:_RCF -> Default
+    catch _:_ -> Rcf
     end.
 
 addinf(inf, _) -> inf;
