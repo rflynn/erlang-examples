@@ -7,24 +7,23 @@
         test/0, tests/0
     ]).
 
-% given a starting point and a weighted graph calculate path cost to all nodes
+% given a starting point and a weighted graph,
+% calculate path cost to all reachable nodes
 dijkstra(Node, G) ->
     dijkstra(Node, G,
         dict:from_list([{Node,0}]),
-        sets:from_list(dict:fetch_keys(G)),
         dict:fetch_keys(G)).
 
-dijkstra(_, _, Dist, _, []) ->
+dijkstra(_, _, Dist, []) ->
     lists:sort(fun({_,X},{_,Y}) -> X < Y end, dict:to_list(Dist));
-dijkstra(Node, G, Dist, UnvisitSet, Unvisit=[U|_]) ->
+dijkstra(Node, G, Dist, Unvisit=[U|_]) ->
     {Closest,_} =
         dict:fold(fun(K,V,Acc) -> closest_min(K,V,Acc) end, {U,inf},
-            dict:filter(fun(K,_) -> sets:is_element(K, UnvisitSet) end,
+            dict:filter(fun(K,_) -> lists:member(K, Unvisit) end,
                 dict:fetch(Node, G))),
     dijkstra(Closest, G,
         distances(Node, G,
             dict:fetch_keys(fetch_or(Node, G, dict:new())), Dist),
-        sets:del_element(Closest, UnvisitSet),
         lists:delete(Closest, Unvisit)).
 
 distances(_, _, [], Dist) -> Dist;
