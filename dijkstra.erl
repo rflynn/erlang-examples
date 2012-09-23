@@ -110,10 +110,10 @@ tests() ->
 
     RealWorld =
         [
-            {win1,      [{cloud,50},{win2,10},{usbdrive,20},{dropbox,20}]},
+            {win1,      [{server,50},{win2,10},{usbdrive,20},{dropbox,20}]},
             {win2,      [{win1,10},{usbdrive,9}]},
-            {cloud,     [{sss,1},{dropbox,10}]},
-            {web,       [{cloud,50}]},
+            {server,    [{sss,1},{dropbox,10}]},
+            {web,       [{server,50}]},
             {sss,       []},
             {dropbox,   []},
             {usbdrive,  []}
@@ -126,7 +126,7 @@ tests() ->
              {win2,10},
              {usbdrive,19},
              {dropbox,20},
-             {cloud,50},
+             {server,50},
              {sss,51}]
         },
 
@@ -137,7 +137,7 @@ tests() ->
              {usbdrive,9},
              {win1,10},
              {dropbox,30},
-             {cloud,60},
+             {server,60},
              {sss,61}]
         },
 
@@ -145,7 +145,7 @@ tests() ->
         {
             [web, RealWorld],
             [{web,0},
-             {cloud,50},
+             {server,50},
              {sss,51},
              {dropbox,60},
              {usbdrive,inf},
